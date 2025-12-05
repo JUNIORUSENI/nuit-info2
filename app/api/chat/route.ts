@@ -115,13 +115,29 @@ ${NIRD_CONTEXT}
 Tu es prêt à aider ! 🌱💻`;
 
 export async function POST(req: Request) {
-    const { messages } = await req.json();
+    try {
+        console.log('API /api/chat called');
+        const { messages } = await req.json();
+        console.log('Messages received:', messages.length);
 
-    const result = streamText({
-        model: google('gemini-2.0-flash-001'),
-        system: SYSTEM_PROMPT,
-        messages,
-    });
+        // Verify API Key availability (don't log the key itself!)
+        if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+            console.error('ERROR: GOOGLE_GENERATIVE_AI_API_KEY is missing');
+            return new Response('Missing API Key', { status: 500 });
+        }
 
-    return result.toTextStreamResponse();
+        const result = streamText({
+            model: google('gemini-2.0-flash-001'),
+            system: SYSTEM_PROMPT,
+            messages,
+        });
+
+        return result.toTextStreamResponse();
+    } catch (error) {
+        console.error('Error in /api/chat:', error);
+        return new Response(JSON.stringify({ error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
 }
