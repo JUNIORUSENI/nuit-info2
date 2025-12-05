@@ -1,9 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { roles } from '../data/roles';
+import CostSimulator from './CostSimulator';
 
 export default function RoleSelector() {
+    const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
+
     // Mapping des rôles vers leurs routes
     const roleRoutes: Record<string, string> = {
         'directeur': '/game/directeur',
@@ -22,7 +26,20 @@ export default function RoleSelector() {
                     </div>
                     <span className="text-[#00ff88] font-bold text-xl">Opération N.I.R.D</span>
                 </div>
+                <button
+                    onClick={() => setIsSimulatorOpen(true)}
+                    className="px-4 py-3 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a]
+                        hover:border-[#00ff88] hover:shadow-[0_0_20px_rgba(0,255,136,0.3)]
+                        transition-all duration-300 flex items-center gap-2"
+                >
+                    <span className="text-xl">🧮</span>
+                    <span className="text-gray-300 hover:text-[#00ff88] font-medium text-sm">
+                        Simulateur
+                    </span>
+                </button>
             </header>
+
+            <CostSimulator isOpen={isSimulatorOpen} onClose={() => setIsSimulatorOpen(false)} />
 
             {/* Contenu principal */}
             <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-20">
